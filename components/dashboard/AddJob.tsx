@@ -42,16 +42,20 @@ export default function AddJob() {
 
     useEffect(() => {
         // Initial Quill only once
-        if (!quillRef.current && editorRef.current) {
-            quillRef.current = new Quill(editorRef.current, {
-                theme: 'snow',
-            });
+        if (!quillRef.current && editorRef.current && typeof window !== 'undefined') {
+            const editor = editorRef.current;
+            import('quill').then(({ default: Quill }) => {
+                if (!editor) return;
+                quillRef.current = new Quill(editor, {
+                    theme: 'snow',
+                });
 
-            // Set up text-change listener for description
-            quillRef.current.on('text-change', () => {
-                if (quillRef.current) {
-                    setValue('description', quillRef.current.root.innerHTML, { shouldValidate: true });
-                }
+                // Set up text-change listener for description
+                quillRef.current.on('text-change', () => {
+                    if (quillRef.current) {
+                        setValue('description', quillRef.current.root.innerHTML, { shouldValidate: true });
+                    }
+                });
             });
         }
     }, [setValue]);
