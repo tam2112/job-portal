@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Job" ALTER COLUMN "date" SET DATA TYPE BIGINT;
+
+-- AlterTable
+ALTER TABLE "JobApplication" ALTER COLUMN "date" SET DATA TYPE BIGINT;

@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  email           String           @unique
+  password        String
+  files           File[]
+  createdAt       DateTime         @default(now())
+  images          Image[]
+  roleId          String
+  role            Role             @relation(fields: [roleId], references: [id])
+  jobApplications JobApplication[]
+}
+
+model Company {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  email           String           @unique
+  password        String
+  createdAt       DateTime         @default(now())
+  images          Image[]
+  roleId          String
+  role            Role             @relation(fields: [roleId], references: [id])
+  jobs            Job[]
+  jobApplications JobApplication[]
+}
+
+model Role {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  users     User[]
+  companies Company[]
+}
+
+model Job {
+  id              String           @id @default(uuid())
+  title           String
+  description     String
+  location        String
+  category        String
+  level           String
+  salary          Float
+  date            BigInt
+  visible         Boolean
+  createdAt       DateTime         @default(now())
+  companyId       String
+  company         Company          @relation(fields: [companyId], references: [id])
+  jobApplications JobApplication[]
+}
+
+model JobApplication {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id])
+  statusId  String
+  status    Status   @relation(fields: [statusId], references: [id])
+  date      BigInt
+  createdAt DateTime @default(now())
+}
+
+model Status {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  createdAt       DateTime         @default(now())
+  jobApplications JobApplication[]
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  url       String   @unique
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+model File {
+  id        String   @id @default(uuid())
+  url       String   @unique
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+}
